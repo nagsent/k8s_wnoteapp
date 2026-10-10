@@ -62,7 +62,8 @@ jobs:
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
-          sed -i "s/your-dockerhub-user/${DOCKERHUB_USERNAME}/g" k8s/backend/backend-deployment.yaml
+          sed -i "s|image: notes-backend:latest|image: ${DOCKERHUB_USERNAME}/notes-backend:latest|" k8s/backend/backend-deployment.yaml
+          sed -i "s/imagePullPolicy: Never/imagePullPolicy: Always/" k8s/backend/backend-deployment.yaml
           sed -i "s/your-dockerhub-user/${DOCKERHUB_USERNAME}/g" k8s/frontend/frontend-deployment.docker.yaml
           kubectl apply -f k8s/namespace.yaml
           kubectl apply -f k8s/db/db-configmap.yaml

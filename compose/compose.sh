@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Scenario 1 — Docker Compose.
+# Scenario 2 — Docker Compose.
 # Note: runs the app locally; it does not deploy to Kubernetes.
 set -euo pipefail
 

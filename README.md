@@ -9,8 +9,8 @@ Choose one deployment path:
 
 | Scenario | Location | Use |
 | --- | --- | --- |
+| Local Kubernetes YAML deploy | [k8s/](./k8s/) and [scripts/deploy.sh](./scripts/deploy.sh) | Build the backend image locally and deploy PostgreSQL, backend, and ConfigMap frontend to Docker Desktop Kubernetes using Kustomize; no Docker Hub login or push. |
 | Docker Compose | [compose/](./compose/) and [compose/compose.sh](./compose/compose.sh) | Run the full stack locally without Kubernetes. |
-| YAML-only Kubernetes deploy | [k8s/](./k8s/) and [scripts/deploy.sh](./scripts/deploy.sh) | Deploy PostgreSQL, the backend container image, and the frontend served from a ConfigMap with `kubectl apply -k`; no Docker Compose is used. |
 | Helm | [helm/notes-app/](./helm/notes-app/) and [helm/notes-app/deploy.sh](./helm/notes-app/deploy.sh) | Install the app as a configurable Helm release. |
 | CI/CD | [workflow/ci-cd.yaml](./workflow/ci-cd.yaml) | Build and push frontend/backend images, then deploy both images to Kubernetes on pushes to `main` or manual workflow dispatch. |
 
@@ -20,67 +20,38 @@ overlapping names.
 
 ## Requirements
 
+- Docker Desktop with Kubernetes enabled, Docker CLI, and `kubectl` for Scenario 1
 - Docker Engine with the Docker Compose plugin for the Compose scenario
 - A Kubernetes cluster and `kubectl` for Kubernetes scenarios
 - An Nginx Ingress Controller to use `notes.local` through Ingress
 - Helm 3 for the Helm scenario
-- A Docker Hub account for the raw-manifest and CI/CD scenarios
+- A Docker Hub account for Helm and CI/CD scenarios that publish application images
 
-## Scenario 1: Docker Compose
+## Scenario 1: Local Kubernetes YAML deployment
 
-**Note:** This scenario runs the app locally with Docker Compose. It does not
-deploy to Kubernetes. Run the scenario script from the repository root:
+**Note:** This scenario deploys the raw Kubernetes YAML to the local
+Docker Desktop Kubernetes cluster. The script builds `notes-backend:local` on
+your machine and Kubernetes uses that local image (`imagePullPolicy: Never`).
+It does not log in to Docker Hub or push the backend image. Docker Desktop
+Kubernetes must be enabled and selected as the current `kubectl` context
+(`docker-desktop`).
 
-```bash
-bash compose/compose.sh
-```
-
-Open <http://localhost:8080>. The backend is also available at
-<http://localhost:5000/api/notes>. Stop the stack with:
-
-```bash
-docker compose -f compose/docker-compose.yaml down
-```
-
-Add `--volumes` to `down` only if you also want to remove the local PostgreSQL
-data.
-
-## Scenario 2: Raw Kubernetes manifests
-
-**Note:** This scenario deploys Kubernetes YAML directly with Kustomize; it does
-not use Docker Compose or Helm. The frontend is served from a ConfigMap, so only
-the backend image needs to be built and pushed. Set its Docker Hub image under `images` in
-[k8s/kustomization.yaml](./k8s/kustomization.yaml) (`newName`) before deploying.
-The default is `your-dockerhub-user/notes-backend:latest`.
-
-Build and publish the backend image (PowerShell example):
-
-```powershell
-$env:DOCKERHUB_USERNAME = "your-dockerhub-user"
-docker login
-docker build -t "$env:DOCKERHUB_USERNAME/notes-backend:latest" `
-  -f .\k8s\backend\Dockerfile .\k8s\backend
-docker push "$env:DOCKERHUB_USERNAME/notes-backend:latest"
-```
-
-The equivalent Bash build commands are:
-
-```sh
-export DOCKERHUB_USERNAME=your-dockerhub-user
-docker login
-bash k8s/backend/docker.sh
-```
-
-Set `newName` in `k8s/kustomization.yaml` to the literal image name for your
-account (for example, `my-dockerhub-user/notes-backend`). Then run the
-deployment script from the repository root (Git Bash or WSL on Windows):
+From the repository root, run the script with Git Bash or WSL on Windows:
 
 ```bash
 bash scripts/deploy.sh
 ```
 
-It applies all Kubernetes resources with Kustomize and waits for the backend
-rollout.
+The script checks the Docker Desktop context, builds the backend image, applies
+the [Kustomize configuration](./k8s/kustomization.yaml), and waits for the
+backend rollout. To customize the local image tag, update both the `images`
+entry in `k8s/kustomization.yaml` and the build tag in
+`scripts/deploy.sh`; keep the deployment's pull policy set to `Never`.
+
+This deployment needs no Docker Hub credentials. On first use, Docker may still
+download public base images and build dependencies if they are not already
+cached locally. The frontend is served from a ConfigMap; PostgreSQL and Nginx
+are public images Kubernetes may download if they are not cached.
 
 The PostgreSQL Secret in the sample manifests is for local/demo use; replace it
 with a securely managed secret before using this outside a disposable
@@ -96,6 +67,25 @@ kubectl port-forward -n webappns svc/frontend-nginx-svc 8080:80
 ```
 
 Then open <http://localhost:8080>.
+
+## Scenario 2: Docker Compose
+
+**Note:** This scenario runs the app locally with Docker Compose. It does not
+deploy to Kubernetes. Run the scenario script from the repository root:
+
+```bash
+bash compose/compose.sh
+```
+
+Open <http://localhost:8080>. The backend is also available at
+<http://localhost:5000/api/notes>. Stop the stack with:
+
+```sh
+docker compose -f compose/docker-compose.yaml down
+```
+
+Add `--volumes` to `down` only if you also want to remove the local PostgreSQL
+data.
 
 ## Scenario 3: Helm
 

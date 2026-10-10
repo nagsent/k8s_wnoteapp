@@ -14,7 +14,8 @@ resources:
   - frontend/frontend-service.yaml
   - ingress.yaml
 
+# Keep this local tag in sync with the image built by scripts/deploy.sh.
 images:
-  - name: your-dockerhub-user/notes-backend
-    newName: your-dockerhub-user/notes-backend
-    newTag: latest
+  - name: notes-backend
+    newName: notes-backend
+    newTag: local

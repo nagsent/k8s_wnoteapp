@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
         - name: backend-api
-          image: your-dockerhub-user/notes-backend:latest
+          image: notes-backend:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 5000
           env:
