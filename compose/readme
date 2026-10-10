@@ -1,9 +1,12 @@
-✔ Frontend
-http://localhost:8080
-✔ Backend
-http://localhost:5000/api/notes
-✔ PostgreSQL
-localhost:5432
-user: notesuser
-pass: securepass
-db: notesdb
+Run from the repository root:
+
+```sh
+docker compose -f compose/docker-compose.yaml up --build
+```
+
+- Frontend: <http://localhost:8080>
+- Backend API: <http://localhost:5000/api/notes>
+- PostgreSQL: `localhost:5432` (`notesdb`, `notesuser`)
+
+See the root [README](../README.md) for Kubernetes, Helm, and CI/CD deployment
+scenarios.

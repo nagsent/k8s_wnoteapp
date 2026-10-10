@@ -1,6 +1,10 @@
-Required GitHub Secrets
-GitHub → Settings → Secrets → Action
-Secret Name	Value
-DOCKERHUB_USERNAME	Docker Hub account name
-DOCKERHUB_TOKEN		Docker Hub token
-KUBECONFIG		kubeconfig
+Configure these repository Actions secrets before running
+[the CI/CD workflow](./ci-cd.yaml):
+
+- `DOCKERHUB_USERNAME`: Docker Hub account name.
+- `DOCKERHUB_TOKEN`: Docker Hub access token.
+- `KUBECONFIG`: kubeconfig content for the deployment cluster.
+
+The workflow builds the Docker images from `k8s/backend` and `k8s/frontend`,
+pushes them to Docker Hub, and deploys the image-based Kubernetes workloads.
+See the root [README](../README.md) for the other deployment scenarios.

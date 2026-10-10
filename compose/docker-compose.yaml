@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
 
   postgres:
@@ -18,7 +16,7 @@ services:
 
   backend:
     build:
-      context: ../backend
+      context: ../k8s/backend
       dockerfile: Dockerfile
     container_name: notes-backend
     environment:
@@ -35,7 +33,7 @@ services:
 
   frontend:
     build:
-      context: ../frontend
+      context: ../k8s/frontend
       dockerfile: Dockerfile
     container_name: notes-frontend
     depends_on:
@@ -50,4 +48,3 @@ networks:
 
 volumes:
   postgres_data:
-

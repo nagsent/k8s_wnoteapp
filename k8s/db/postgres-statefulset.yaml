@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres-sts
-  namespace: web_app_ns
+  namespace: webappns
 spec:
   serviceName: postgres-svc
   replicas: 1
@@ -46,4 +46,3 @@ spec:
         resources:
           requests:
             storage: 1Gi
-

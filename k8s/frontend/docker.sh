@@ -1,3 +1,7 @@
-docker build -t notes-frontend:latest frontend/
-docker tag notes-frontend:latest <dockerhub-user>/notes-frontend:latest
-docker push <dockerhub-user>/notes-frontend:latest
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${DOCKERHUB_USERNAME:?Set DOCKERHUB_USERNAME before running this script}"
+docker build -t "${DOCKERHUB_USERNAME}/notes-frontend:latest" \
+  -f k8s/frontend/Dockerfile k8s/frontend
+docker push "${DOCKERHUB_USERNAME}/notes-frontend:latest"

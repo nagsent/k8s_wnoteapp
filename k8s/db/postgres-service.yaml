@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-svc
-  namespace: web_app_ns
+  namespace: webappns
 spec:
   clusterIP: None
   selector:
@@ -10,4 +10,3 @@ spec:
   ports:
     - port: 5432
       targetPort: 5432
-

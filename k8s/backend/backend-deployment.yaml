@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-api-dep
-  namespace: web_app_ns
+  namespace: webappns
 spec:
   replicas: 2
   selector:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend-api
-          image: python:3.11-slim
+          image: your-dockerhub-user/notes-backend:latest
           ports:
             - containerPort: 5000
           env:
@@ -39,12 +39,3 @@ spec:
                 secretKeyRef:
                   name: db-secret
                   key: DB_PASSWORD
-          volumeMounts:
-            - name: backend-code
-              mountPath: /app
-          command: ["python", "/app/app.py"]
-      volumes:
-        - name: backend-code
-          configMap:
-            name: backend-code-cm
-

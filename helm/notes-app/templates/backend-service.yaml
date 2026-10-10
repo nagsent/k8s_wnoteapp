@@ -8,11 +8,6 @@ spec:
   selector:
     app: backend-api
   ports:
-    - port: {{ .Values.backend.servicePort }}
-      targetPort: 5000
-# for monitoring
-  ports:
     - name: http
-      port: 5000
+      port: {{ .Values.backend.servicePort }}
       targetPort: 5000
-

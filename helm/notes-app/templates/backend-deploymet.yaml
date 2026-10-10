@@ -17,7 +17,8 @@ spec:
         - name: backend-api
           image: {{ .Values.backend.image }}
           ports:
-            - containerPort: 5000
+            - name: http
+              containerPort: 5000
           env:
             - name: DB_HOST
               value: postgres-svc
@@ -30,4 +31,3 @@ spec:
                 secretKeyRef:
                   name: db-secret
                   key: DB_PASSWORD
-

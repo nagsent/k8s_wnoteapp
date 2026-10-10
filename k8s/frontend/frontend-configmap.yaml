@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: frontend-web-cm
-  namespace: web_app_ns
+  namespace: webappns
 data:
   index.html: |
     <!DOCTYPE html>
@@ -51,4 +51,3 @@ data:
       </script>
     </body>
     </html>
-

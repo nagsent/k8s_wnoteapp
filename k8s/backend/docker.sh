@@ -1,5 +1,7 @@
-docker build -t notes-backend:latest backend/
+#!/usr/bin/env bash
+set -euo pipefail
 
-docker tag notes-backend:latest <your-dockerhub-user>/notes-backend:latest
-docker push <your-dockerhub-user>/notes-backend:latest
-
+: "${DOCKERHUB_USERNAME:?Set DOCKERHUB_USERNAME before running this script}"
+docker build -t "${DOCKERHUB_USERNAME}/notes-backend:latest" \
+  -f k8s/backend/Dockerfile k8s/backend
+docker push "${DOCKERHUB_USERNAME}/notes-backend:latest"

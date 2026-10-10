@@ -2,10 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: web-app-ingress
-  namespace: web_app_ns
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+  namespace: webappns
 spec:
+  ingressClassName: nginx
   rules:
     - host: notes.local
       http:
@@ -24,4 +23,3 @@ spec:
                 name: backend-api-svc
                 port:
                   number: 5000
-

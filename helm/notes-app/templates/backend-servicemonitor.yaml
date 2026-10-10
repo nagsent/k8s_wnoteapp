@@ -1,3 +1,4 @@
+{{- if .Values.monitoring.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -11,9 +12,9 @@ spec:
       app: backend-api
   namespaceSelector:
     matchNames:
-      - web_app_ns
+      - webappns
   endpoints:
     - port: http
       path: /metrics
       interval: 15s
-
+{{- end }}
