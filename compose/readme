@@ -1,0 +1,9 @@
+✔ Frontend
+http://localhost:8080
+✔ Backend
+http://localhost:5000/api/notes
+✔ PostgreSQL
+localhost:5432
+user: notesuser
+pass: securepass
+db: notesdb

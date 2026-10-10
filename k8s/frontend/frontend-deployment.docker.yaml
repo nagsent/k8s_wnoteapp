@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-nginx-dep
+  namespace: web_app_ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend-nginx
+  template:
+    metadata:
+      labels:
+        app: frontend-nginx
+    spec:
+      containers:
+        - name: nginx
+          image: <dockerhub-user>/notes-frontend:latest
+          ports:
+            - containerPort: 80
+

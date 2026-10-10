@@ -1,0 +1,7 @@
+apiVersion: v2
+name: notes-app
+description: A simple notes web application (frontend + backend + postgres)
+type: application
+version: 1.0.0
+appVersion: "1.0"
+

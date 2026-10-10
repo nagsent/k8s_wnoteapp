@@ -1,0 +1,16 @@
+{
+  "title": "Notes Backend Metrics",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "API Requests",
+      "targets": [
+        {
+          "expr": "notes_api_requests_total",
+          "legendFormat": "{{method}} {{endpoint}}"
+        }
+      ]
+    }
+  ]
+}
+

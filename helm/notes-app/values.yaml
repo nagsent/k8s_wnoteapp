@@ -1,0 +1,25 @@
+namespace: web_app_ns
+
+frontend:
+  image: "yourdockerhub/notes-frontend:latest"
+  replicas: 2
+  servicePort: 80
+
+backend:
+  image: "yourdockerhub/notes-backend:latest"
+  replicas: 2
+  servicePort: 5000
+
+database:
+  name: notesdb
+  user: notesuser
+  password: securepass
+  storage: 1Gi
+
+#ingress:
+#  host: notes.local
+ingress:
+  host: notes.local
+  email: "your-email@example.com"
+  tls: true
+

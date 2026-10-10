@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-api-svc
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  selector:
+    app: backend-api
+  ports:
+    - port: {{ .Values.backend.servicePort }}
+      targetPort: 5000
+# for monitoring
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
+
