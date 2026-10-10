@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - namespace.yaml
+  - db/db-configmap.yaml
+  - db/db-secret.yaml
+  - db/postgres-service.yaml
+  - db/postgres-statefulset.yaml
+  - backend/backend-deployment.yaml
+  - backend/backend-service.yaml
+  - frontend/frontend-configmap.yaml
+  - frontend/frontend-deployment.yaml
+  - frontend/frontend-service.yaml
+  - ingress.yaml
+
+images:
+  - name: your-dockerhub-user/notes-backend
+    newName: your-dockerhub-user/notes-backend
+    newTag: latest

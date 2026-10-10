@@ -1,28 +1,15 @@
 #!/usr/bin/env bash
+# Scenario 2 — raw Kubernetes YAML via Kustomize.
+# Note: set the backend image in k8s/kustomization.yaml and push it to Docker Hub first.
 set -euo pipefail
 
-: "${DOCKERHUB_USERNAME:?Set DOCKERHUB_USERNAME to the Docker Hub account containing notes-backend}"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 
-echo "Deploying Simple Notes App..."
+if ! command -v kubectl >/dev/null 2>&1; then
+  echo "Error: kubectl is required for the raw Kubernetes YAML scenario." >&2
+  exit 1
+fi
 
-kubectl apply -f k8s/namespace.yaml
-
-kubectl apply -f k8s/db/db-configmap.yaml
-kubectl apply -f k8s/db/db-secret.yaml
-kubectl apply -f k8s/db/postgres-service.yaml
-kubectl apply -f k8s/db/postgres-statefulset.yaml
-
-kubectl apply -f k8s/backend/backend-deployment.yaml
-kubectl set image deployment/backend-api-dep \
-  "backend-api=${DOCKERHUB_USERNAME}/notes-backend:latest" \
-  --namespace webappns
-kubectl apply -f k8s/backend/backend-service.yaml
-
-kubectl apply -f k8s/frontend/frontend-configmap.yaml
-kubectl apply -f k8s/frontend/frontend-deployment.yaml
-kubectl apply -f k8s/frontend/frontend-service.yaml
-
-kubectl apply -f k8s/ingress.yaml
-
+kubectl apply -k "${REPO_ROOT}/k8s"
 kubectl rollout status deployment/backend-api-dep --namespace webappns
-echo "Deployment completed successfully."
