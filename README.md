@@ -9,7 +9,7 @@ Choose one deployment path:
 
 | Scenario | Location | Use |
 | --- | --- | --- |
-| Local Kubernetes YAML deploy | [k8s/](./k8s/) and [scripts/deploy.sh](./scripts/deploy.sh) | Build the backend image locally and deploy PostgreSQL, backend, and ConfigMap frontend to Docker Desktop Kubernetes using Kustomize; no Docker Hub login or push. |
+| Docker Desktop Kubernetes YAML deploy | [k8s/](./k8s/) and [scripts/deploy.sh](./scripts/deploy.sh) | Deploy PostgreSQL, a public Docker Hub backend image, and ConfigMap frontend to Docker Desktop Kubernetes using Kustomize; no Docker Hub login or Compose. |
 | Docker Compose | [compose/](./compose/) and [compose/compose.sh](./compose/compose.sh) | Run the full stack locally without Kubernetes. |
 | Helm | [helm/notes-app/](./helm/notes-app/) and [helm/notes-app/deploy.sh](./helm/notes-app/deploy.sh) | Install the app as a configurable Helm release. |
 | CI/CD | [workflow/ci-cd.yaml](./workflow/ci-cd.yaml) | Build and push frontend/backend images, then deploy both images to Kubernetes on pushes to `main` or manual workflow dispatch. |
@@ -20,38 +20,44 @@ overlapping names.
 
 ## Requirements
 
-- Docker Desktop with Kubernetes enabled, Docker CLI, and `kubectl` for Scenario 1
+- Docker Desktop with Kubernetes enabled and `kubectl` for Scenario 1
 - Docker Engine with the Docker Compose plugin for the Compose scenario
 - A Kubernetes cluster and `kubectl` for Kubernetes scenarios
 - An Nginx Ingress Controller to use `notes.local` through Ingress
 - Helm 3 for the Helm scenario
 - A Docker Hub account for Helm and CI/CD scenarios that publish application images
 
-## Scenario 1: Local Kubernetes YAML deployment
+## Scenario 1: Docker Desktop Kubernetes YAML deployment
 
-**Note:** This scenario deploys the raw Kubernetes YAML to the local
-Docker Desktop Kubernetes cluster. The script builds `notes-backend:local` on
-your machine and Kubernetes uses that local image (`imagePullPolicy: Never`).
-It does not log in to Docker Hub or push the backend image. Docker Desktop
-Kubernetes must be enabled and selected as the current `kubectl` context
-(`docker-desktop`).
+**Note:** This scenario deploys Kubernetes YAML to Docker Desktop's Kubernetes
+cluster. It does not use Minikube, Docker Compose, or `docker login`. The
+backend image must already be public on Docker Hub so the cluster can pull it
+anonymously. Docker Desktop Kubernetes must be enabled and the current
+`kubectl` context must be `docker-desktop`.
 
-From the repository root, run the script with Git Bash or WSL on Windows:
+Before the first deploy, edit `images[0].newName` in
+[k8s/kustomization.yaml](./k8s/kustomization.yaml) to the public Docker Hub
+repository that contains this app's backend (for example,
+`myaccount/notes-backend`). Keep the tag in `newTag`, and do not add
+`imagePullSecrets` or change the backend pull policy from `Always`.
+
+Run the deployment script from the repository root with Git Bash or WSL on
+Windows:
 
 ```bash
 bash scripts/deploy.sh
 ```
 
-The script checks the Docker Desktop context, builds the backend image, applies
-the [Kustomize configuration](./k8s/kustomization.yaml), and waits for the
-backend rollout. To customize the local image tag, update both the `images`
-entry in `k8s/kustomization.yaml` and the build tag in
-`scripts/deploy.sh`; keep the deployment's pull policy set to `Never`.
+The script verifies the Docker Desktop context and that the placeholder image
+has been replaced, applies the
+[Kustomize configuration](./k8s/kustomization.yaml), and waits up to three
+minutes for the backend rollout. Docker Desktop Kubernetes pulls the backend
+and the public PostgreSQL/Nginx images directly; no Docker CLI, Docker Hub
+credentials, or local image build is needed.
 
-This deployment needs no Docker Hub credentials. On first use, Docker may still
-download public base images and build dependencies if they are not already
-cached locally. The frontend is served from a ConfigMap; PostgreSQL and Nginx
-are public images Kubernetes may download if they are not cached.
+If the backend pod reports `ErrImagePull` or `ImagePullBackOff`, check that the
+configured Docker Hub repository and tag exist and are public. Then rerun
+`bash scripts/deploy.sh`.
 
 The PostgreSQL Secret in the sample manifests is for local/demo use; replace it
 with a securely managed secret before using this outside a disposable

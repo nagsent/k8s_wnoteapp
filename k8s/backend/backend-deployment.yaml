@@ -16,7 +16,7 @@ spec:
       containers:
         - name: backend-api
           image: notes-backend:latest
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
           env:

@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
-# Scenario 1 — local Kubernetes YAML via Kustomize on Docker Desktop.
-# Note: builds notes-backend:local locally; no Docker Hub login or image push is needed.
+# Scenario 1 — YAML deployment to Docker Desktop Kubernetes.
+# Note: configure a public Docker Hub backend image in k8s/kustomization.yaml; no login or Compose is used.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 
-for required_command in docker kubectl; do
-  if ! command -v "${required_command}" >/dev/null 2>&1; then
-    echo "Error: ${required_command} is required for the local Kubernetes YAML scenario." >&2
-    exit 1
-  fi
-done
+if ! command -v kubectl >/dev/null 2>&1; then
+  echo "Error: kubectl is required for the Docker Desktop Kubernetes scenario." >&2
+  exit 1
+fi
 
 CURRENT_CONTEXT="$(kubectl config current-context)"
 if [[ "${CURRENT_CONTEXT}" != "docker-desktop" ]]; then
@@ -20,10 +18,17 @@ if [[ "${CURRENT_CONTEXT}" != "docker-desktop" ]]; then
   exit 1
 fi
 
-docker info >/dev/null
-docker build \
-  --tag notes-backend:local \
-  --file "${REPO_ROOT}/k8s/backend/Dockerfile" \
-  "${REPO_ROOT}/k8s/backend"
+if ! RENDERED_MANIFESTS="$(kubectl kustomize "${REPO_ROOT}/k8s" 2>&1)"; then
+  echo "Error: could not render the Kubernetes manifests." >&2
+  echo "${RENDERED_MANIFESTS}" >&2
+  exit 1
+fi
+
+if grep -q 'your-dockerhub-user' <<< "${RENDERED_MANIFESTS}"; then
+  echo "Error: set images[0].newName in k8s/kustomization.yaml to your public Docker Hub backend image." >&2
+  echo "Example: docker.io/myaccount/notes-backend" >&2
+  exit 1
+fi
+
 kubectl apply -k "${REPO_ROOT}/k8s"
-kubectl rollout status deployment/backend-api-dep --namespace webappns
+kubectl rollout status deployment/backend-api-dep --namespace webappns --timeout=180s
