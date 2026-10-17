@@ -23,3 +23,5 @@ echo "Applying Ingress..."
 kubectl apply -f ingress.yaml
 
 echo "All components deployed in namespace web_app_ns."
+
+kubectl port-forward -n web-app-ns svc/frontend-nginx-svc 8080:80

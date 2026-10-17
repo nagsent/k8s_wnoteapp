@@ -21,6 +21,9 @@ spec:
           volumeMounts:
             - name: web-content
               mountPath: /usr/share/nginx/html
+            - name: web-content
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
       volumes:
         - name: web-content
           configMap:

@@ -42,7 +42,12 @@ spec:
           volumeMounts:
             - name: backend-code
               mountPath: /app
-          command: ["python", "/app/app.py"]
+          # This step-by-step manifest runs the stock Python image and mounts
+          # app.py from a ConfigMap, so install the app's runtime dependencies
+          # before starting it.
+          command: ["sh", "-c"]
+          args:
+            - pip install --no-cache-dir flask psycopg2-binary && exec python /app/app.py
       volumes:
         - name: backend-code
           configMap:

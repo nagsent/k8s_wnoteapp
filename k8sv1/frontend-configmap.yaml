@@ -4,6 +4,22 @@ metadata:
   name: frontend-web-cm
   namespace: web-app-ns
 data:
+  default.conf: |
+    server {
+      listen 80;
+      server_name _;
+
+      location /api/ {
+        proxy_pass http://backend-api-svc:5000/api/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+      }
+
+      location / {
+        root /usr/share/nginx/html;
+        index index.html;
+      }
+    }
   index.html: |
     <!DOCTYPE html>
     <html>
