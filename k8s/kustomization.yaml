@@ -10,6 +10,7 @@ resources:
   - backend/backend-deployment.yaml
   - backend/backend-service.yaml
   - frontend/frontend-configmap.yaml
+  - frontend/frontend-nginx-configmap.yaml
   - frontend/frontend-deployment.yaml
   - frontend/frontend-service.yaml
   - ingress.yaml
@@ -17,5 +18,5 @@ resources:
 # Replace this with the public Docker Hub image for your backend.
 images:
   - name: notes-backend
-    newName: your-dockerhub-user/notes-backend
+    newName: nagsent/notes-backend
     newTag: latest
