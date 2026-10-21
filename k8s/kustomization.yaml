@@ -10,12 +10,13 @@ resources:
   - backend/backend-deployment.yaml
   - backend/backend-service.yaml
   - frontend/frontend-configmap.yaml
+  - frontend/frontend-nginx-configmap.yaml
   - frontend/frontend-deployment.yaml
   - frontend/frontend-service.yaml
   - ingress.yaml
 
 # Replace this with the public Docker Hub image for your backend.
 images:
-  - name: compse-backend
-    newName: $DOCKERHUB_USERNAME=/compose-backend
+  - name: notes-backend
+    newName: your-dockerhub-user/notes-backend
     newTag: latest
