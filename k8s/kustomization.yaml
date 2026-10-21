@@ -16,6 +16,6 @@ resources:
 
 # Replace this with the public Docker Hub image for your backend.
 images:
-  - name: notes-backend
-    newName: your-dockerhub-user/notes-backend
+  - name: compse-backend
+    newName: $DOCKERHUB_USERNAME=/compose-backend
     newTag: latest
